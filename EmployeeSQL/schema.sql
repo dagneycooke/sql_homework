@@ -1,14 +1,14 @@
-DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS dept_emp;
 DROP TABLE IF EXISTS dept_manager;
-DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS salaries;
 DROP TABLE IF EXISTS titles;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS departments;
 
 CREATE TABLE departments (
 	dept_no VARCHAR NOT NULL PRIMARY KEY,
 	dept_name VARCHAR NOT NULL,
-	CONSTRAINT dept_name UNIQUE (dept_name)
+	CONSTRAINT no_repeat_names UNIQUE(dept_name)
 );
 	
 COPY departments 
@@ -29,7 +29,7 @@ FROM '/Users/dagneycooke/UCB-BEL-DATA-PT-11-2019-U-C/02-Homework/09-SQL/Instruct
 CSV HEADER;
 
 CREATE TABLE dept_emp (
-	emp_no INT NOT NULL PRIMARY KEY,
+	emp_no INT NOT NULL,
 	dept_no VARCHAR NOT NULL,
 	from_date VARCHAR NOT NULL,
 	to_date VARCHAR NOT NULL, -- come back and fix formatting on this
@@ -47,7 +47,8 @@ CREATE TABLE dept_manager(
 	from_date VARCHAR NOT NULL,
 	to_date VARCHAR NOT NULL,
 	FOREIGN KEY (emp_no) REFERENCES employees(emp_no),
-	FOREIGN KEY (dept_no) REFERENCES departments(dept_no)
+	FOREIGN KEY (dept_no) REFERENCES departments(dept_no),
+	CONSTRAINT one_manager PRIMARY KEY (dept_no,from_date)
 );
 
 COPY dept_manager
@@ -59,7 +60,8 @@ CREATE TABLE salaries(
 	salary INT NOT NULL,
 	from_date VARCHAR NOT NULL,
 	to_date VARCHAR NOT NULL,
-	FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
+	FOREIGN KEY (emp_no) REFERENCES employees(emp_no),
+	CONSTRAINT one_salary PRIMARY KEY (emp_no,from_date)
 );
 
 COPY salaries
@@ -71,11 +73,10 @@ CREATE TABLE titles(
 	title VARCHAR NOT NULL,
 	from_date VARCHAR NOT NULL,
 	to_date VARCHAR NOT NULL,
-	FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
+	FOREIGN KEY (emp_no) REFERENCES employees(emp_no),
+	CONSTRAINT one_title PRIMARY KEY(emp_no,from_date)
 );
 
 COPY titles
 FROM '/Users/dagneycooke/UCB-BEL-DATA-PT-11-2019-U-C/02-Homework/09-SQL/Instructions/data/titles.csv'
 CSV HEADER;
-
-SELECT * FROM titles
